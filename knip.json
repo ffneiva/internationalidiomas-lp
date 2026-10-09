@@ -1,0 +1,26 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "src/main.tsx",
+    "src/entry-server.tsx",
+    "scripts/*.mjs",
+    "tests/**/*.{ts,tsx}",
+    "api/**/*.mjs",
+    "src/scene/*.ts",
+    "src/produtos/*.tsx"
+  ],
+  "project": ["src/**/*.{ts,tsx}", "scripts/**/*.mjs", "tests/**/*.{ts,tsx}", "api/**/*.mjs"],
+  "ignore": ["scratch/**"],
+  "ignoreDependencies": [
+    "@vitest/coverage-v8",
+    "lefthook",
+    "@commitlint/config-conventional",
+    "tailwindcss",
+    "@aws-sdk/client-dynamodb",
+    "@aws-sdk/client-sesv2",
+    "@aws-sdk/client-ssm"
+  ],
+  "compilers": {
+    "css": false
+  }
+}
