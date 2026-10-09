@@ -1,0 +1,42 @@
+{
+ "depoimento-anna": {
+  "cor": "#483828",
+  "proporcao": 0.5625,
+  "larguras": [
+   360,
+   405
+  ]
+ },
+ "depoimento-ronan": {
+  "cor": "#384848",
+  "proporcao": 0.5625,
+  "larguras": [
+   360,
+   405
+  ]
+ },
+ "fachada-atual": {
+  "cor": "#485858",
+  "proporcao": 1.7722,
+  "larguras": [
+   360,
+   638
+  ]
+ },
+ "projeto-festival": {
+  "cor": "#482828",
+  "proporcao": 0.5611,
+  "larguras": [
+   360,
+   404
+  ]
+ },
+ "trajeto-inicio": {
+  "cor": "#e8e8e8",
+  "proporcao": 1.7722,
+  "larguras": [
+   360,
+   638
+  ]
+ }
+}
