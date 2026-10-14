@@ -1,0 +1,577 @@
+@import "tailwindcss";
+@import "./styles/fonts.css";
+
+/*
+ * Sistema visual da International — conforme o MANUAL DE MARCA da escola.
+ *
+ *   marinho  — Azul Intenso #25376A, a cor PREFERENCIAL do manual: fundos
+ *              escuros e texto sobre o branco
+ *   azul     — Azul Royal #074BAE (o azul do logo)
+ *   claro    — Azul Claro #75AFF0: os botões principais sobre o escuro
+ *   noite    — Azul Profundo #001220 (paleta Business/In Company)
+ *   marca    — Amarelo destaque #FFF133. O manual diz: "apenas para títulos e
+ *              detalhes simples". Por isso ele é a caneta marca-texto dos
+ *              títulos e os detalhes (check, pino, ponto na régua) — e NÃO é
+ *              cor de botão nem de faixa grande
+ *
+ * As submarcas (Interkids e In Company/Business) têm paletas próprias,
+ * aplicadas por página trocando as variáveis (ver PaginaCurso).
+ *
+ * Tipografia: família Exo 2 — títulos ExtraBold (800), subtítulos SemiBold
+ * (600), corpo Medium (500).
+ */
+@theme {
+  --color-azul: #074bae;
+  --color-azul-claro: #3a78d8;
+  --color-azul-vivo: #1560d4;
+  --color-claro: #75aff0;
+  --color-marinho: #25376a;
+  --color-marinho-2: #2d4280;
+  --color-noite: #001220;
+  --color-tinta: #25376a;
+  --color-cinza: #56627f;
+  --color-nevoa: #cdd6ea;
+  --color-linha: #dde4f0;
+  --color-papel: #f3f6fc;
+  --color-branco: #ffffff;
+
+  --color-marca: #fff133;
+  --color-marca-2: #fff133;
+  --color-agua: #19b3c2;
+  --color-whats: #1f7a4d;
+  --color-whats-2: #25d366;
+
+  --font-sans: "Exo 2", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --ease-inter: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-corte: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@layer base {
+  html {
+    font-weight: 500;
+    background: var(--color-papel);
+    color: var(--color-tinta);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: auto;
+    /* A barra fixa não pode cobrir a âncora de destino. */
+    scroll-padding-top: 5.5rem;
+  }
+
+  body {
+    min-height: 100dvh;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--color-marca);
+    color: var(--color-noite);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-azul-vivo);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  [data-tema="escuro"] :focus-visible {
+    outline-color: var(--color-marca);
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+    /* Contexto próprio de empilhamento: a faixa do marca-texto (z-index -1)
+       fica atrás do texto do título, mas na frente do fundo da seção. */
+    isolation: isolate;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@utility container-x {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+  @media (min-width: 640px) {
+    padding-inline: 2rem;
+  }
+  @media (min-width: 1024px) {
+    padding-inline: 3rem;
+  }
+}
+
+/* Títulos: Exo 2 ExtraBold, como manda o manual. */
+@utility titulo-largo {
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.08;
+}
+
+@utility titulo-secao {
+  font-weight: 800;
+  letter-spacing: -0.005em;
+  line-height: 1.12;
+}
+
+/* Subtítulos: Exo 2 SemiBold. */
+@utility subtitulo {
+  font-weight: 600;
+}
+
+/* Sobretítulo: caixa alta, largo, espaçado. */
+@utility rotulo {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/*
+ * Marca-texto.
+ *
+ * A faixa amarela atrás da palavra, cobrindo só a metade de baixo — como a
+ * caneta passa. Ela é um `background` e não um pseudo-elemento, para quebrar
+ * junto com o texto em várias linhas (`box-decoration-break`). O componente
+ * <Marca> anima o `background-size` de 0 a 100% quando a palavra entra na
+ * tela; sem JS, a faixa já nasce inteira.
+ */
+@utility marca-texto {
+  background-image: linear-gradient(
+    100deg,
+    transparent 0.25em,
+    var(--color-marca) 0.25em,
+    var(--color-marca-2) calc(100% - 0.2em),
+    transparent calc(100% - 0.2em)
+  );
+  background-repeat: no-repeat;
+  background-position: 0 88%;
+  background-size: 100% var(--altura-marca, 0.5em);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding-inline: 0.12em;
+  margin-inline: -0.12em;
+  /*
+   * A faixa vai para uma camada ABAIXO do resto do título. Sem isto, o fundo
+   * do trecho marcado é pintado depois do texto que vem antes dele (ordem de
+   * pintura do CSS) e cobria a perna do "g" e do "p" da linha de cima — o
+   * "inglês" sobre o "de verdade." do herói. O título é `isolation: isolate`
+   * (ver @layer base), então a camada -1 fica dentro dele, nunca atrás da
+   * seção.
+   */
+  position: relative;
+  z-index: -1;
+}
+
+/*
+ * No fundo escuro, a faixa cobre a palavra INTEIRA e o texto fica marinho:
+ * meia faixa com texto escuro deixaria a metade de cima da letra sumindo no
+ * fundo.
+ */
+@utility marca-cheia {
+  /* Mais baixa que a entrelinha: a faixa não invade a linha de cima nem a de
+     baixo. */
+  --altura-marca: 0.94em;
+  background-position: 0 58%;
+  color: var(--color-noite);
+}
+
+/*
+ * Faixa cheia (0.94em) em título de entrelinha 1.08 deixa ~0.14em entre uma
+ * faixa e a linha de cima — menos que a perna do "p", do "g" e do "ç". Só
+ * nesses títulos a entrelinha abre o bastante para a perna caber no vão. Fora
+ * de camada de propósito: precisa vencer `titulo-largo`/`titulo-secao`.
+ */
+:is(h1, h2, h3):has(.marca-cheia) {
+  line-height: 1.2;
+}
+
+/* Lista que rola de lado sem mostrar barra (o arraste e as setas continuam). */
+@utility sem-barra {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility fio {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, currentColor 12%, currentColor 88%, transparent);
+  opacity: 0.2;
+}
+
+/* ── Botões ─────────────────────────────────────────────────────────────── */
+
+@utility botao {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  min-height: 3.25rem;
+  padding: 0 1.6rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.005em;
+  isolation: isolate;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color 400ms var(--ease-inter),
+    border-color 400ms var(--ease-inter),
+    transform 400ms var(--ease-inter),
+    box-shadow 400ms var(--ease-inter);
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    transform: translateY(101%);
+    transition: transform 520ms var(--ease-inter);
+  }
+  &:hover::before {
+    transform: translateY(0);
+  }
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+/*
+ * O botão principal é o Azul Claro do manual com texto no Azul Profundo
+ * (9:1 de contraste). O nome ficou "marca" por histórico; o amarelo, pelo
+ * manual, é só de títulos e detalhes simples.
+ */
+@utility botao-marca {
+  background: var(--color-claro);
+  color: var(--color-noite);
+  box-shadow: 0 14px 34px -14px rgba(117, 175, 240, 0.8);
+  &::before {
+    background: #fff;
+  }
+}
+
+@utility botao-azul {
+  background: var(--color-azul);
+  color: #fff;
+  box-shadow: 0 14px 30px -14px rgba(7, 76, 174, 0.8);
+  &::before {
+    background: var(--color-marinho);
+  }
+}
+
+@utility botao-linha {
+  border: 1.5px solid color-mix(in oklab, currentColor 35%, transparent);
+  &::before {
+    background: currentColor;
+    opacity: 0.08;
+  }
+}
+
+/* ── Herói ──────────────────────────────────────────────────────────────── */
+
+/*
+ * O herói NÃO esconde o título para depois animá-lo: o HTML chega
+ * pré-renderizado e o <h1> é o LCP — ele tem de pintar no primeiro quadro,
+ * antes de qualquer JavaScript. O movimento fica com o que é decorativo: o
+ * globo varrendo, as legendas passando, a caneta no "de verdade".
+ */
+
+/*
+ * A caneta no "de verdade." do herói. O texto nasce BRANCO (legível sobre o
+ * marinho no primeiro quadro, que é o do LCP) e escurece enquanto a faixa
+ * passa — no fim, tinta marinho sobre amarelo. Sem animação (movimento
+ * reduzido), vai direto ao estado final.
+ */
+@keyframes caneta {
+  from {
+    background-size: 0% var(--altura-marca);
+    color: #fff;
+  }
+  45% {
+    color: #fff;
+  }
+  to {
+    background-size: 100% var(--altura-marca);
+    color: var(--color-noite);
+  }
+}
+
+.marca-heroi {
+  animation: caneta 1100ms var(--ease-corte) 450ms both;
+}
+
+@keyframes globo-varre {
+  from {
+    clip-path: inset(0 100% 0 0);
+    transform: translateX(-4%) rotate(-6deg);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    transform: none;
+  }
+}
+
+.globo-entra {
+  animation: globo-varre 1600ms var(--ease-inter) 200ms both;
+}
+
+@keyframes gira-lento {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes legenda-entra {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.legenda-entra {
+  animation: legenda-entra 600ms var(--ease-inter) both;
+}
+
+@keyframes pulso {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.pulso::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: inherit;
+  animation: pulso 2.4s var(--ease-inter) infinite;
+}
+
+/*
+ * "Como funciona" no modo horizontal (a classe é posta pelo GSAP): os passos
+ * viram painéis largos numa faixa só, e o número cresce.
+ */
+.trilho-horizontal {
+  display: flex;
+  width: max-content;
+  /* O container-x limita a largura; aqui a faixa precisa passar da tela. */
+  max-width: none;
+  margin-inline: 0;
+  padding-left: max(3rem, calc((100vw - 80rem) / 2 + 3rem));
+  gap: 6rem;
+  padding-right: 20vw;
+}
+
+.trilho-horizontal > .passo {
+  flex-shrink: 0;
+  width: min(34rem, 44vw);
+}
+
+.trilho-horizontal .numero {
+  font-size: 11rem;
+}
+
+/*
+ * Fotografia no estilo do manual de marca: gente real, recortada em faixas
+ * verticais com um véu azul e sombra entre elas ("imagens de pessoas
+ * sobrepostas com sombras"). Vai por cima das capas dos vídeos; some no
+ * hover, quando a pessoa vai assistir.
+ */
+.listras-marca {
+  background-image:
+    linear-gradient(180deg, transparent 40%, rgba(0, 18, 32, 0.55)),
+    repeating-linear-gradient(
+      90deg,
+      rgba(7, 75, 174, 0.28) 0 11%,
+      rgba(0, 18, 32, 0.35) 11% 12%,
+      rgba(117, 175, 240, 0.1) 12% 20%,
+      rgba(0, 18, 32, 0.3) 20% 21%
+    );
+  mix-blend-mode: multiply;
+  transition: opacity 600ms var(--ease-inter);
+}
+
+.group:hover .listras-marca {
+  opacity: 0.25;
+}
+
+/* ── Menu em tela cheia (site) ──────────────────────────────────────────── */
+
+@keyframes menu-abre {
+  from {
+    clip-path: circle(0% at calc(100% - 3rem) 2.5rem);
+  }
+  to {
+    clip-path: circle(150% at calc(100% - 3rem) 2.5rem);
+  }
+}
+
+@keyframes menu-item {
+  from {
+    opacity: 0;
+    transform: translateY(40%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.menu-painel {
+  animation: menu-abre 800ms var(--ease-corte) both;
+}
+
+.menu-item {
+  animation: menu-item 700ms var(--ease-inter) both;
+  animation-delay: calc(200ms + var(--i, 0) * 55ms);
+}
+
+@keyframes enche-linha {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .linha-passos {
+    animation: enche-linha linear both;
+    animation-timeline: view();
+    animation-range: entry 20% cover 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .linha-passos {
+    animation: none !important;
+  }
+}
+
+@keyframes barra-entra {
+  from {
+    transform: translateY(110%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.barra-entra {
+  animation: barra-entra 700ms var(--ease-inter) 400ms both;
+}
+
+/* ── LP: etiquetas flutuantes e o botão que respira ────────────────────── */
+
+@keyframes flutua {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -12px;
+  }
+}
+
+.flutua {
+  animation: flutua 5.5s ease-in-out infinite;
+}
+
+/* Um halo verde que pulsa devagar em volta do botão principal da LP. */
+@keyframes respira {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(37, 211, 102, 0.45),
+      0 16px 40px -12px rgba(37, 211, 102, 0.65);
+  }
+  50% {
+    box-shadow:
+      0 0 0 12px rgba(37, 211, 102, 0),
+      0 16px 40px -12px rgba(37, 211, 102, 0.65);
+  }
+}
+
+.pulso-suave {
+  animation: respira 2.6s ease-in-out infinite;
+}
+
+/* ── Quiz ───────────────────────────────────────────────────────────────── */
+
+@keyframes etapa-entra {
+  from {
+    opacity: 0;
+    transform: translateX(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.etapa-entra > * {
+  animation: etapa-entra 520ms var(--ease-inter) both;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+@keyframes carimbo {
+  0% {
+    opacity: 0;
+    transform: scale(1.3) rotate(-8deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.96) rotate(-3deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(-3deg);
+  }
+}
+
+.carimbo {
+  animation: carimbo 700ms var(--ease-inter) both 150ms;
+}
+
+/* ── Marquee dos exames ─────────────────────────────────────────────────── */
+
+@keyframes marquee-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* ── Movimento reduzido: caminho alternativo completo ───────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}
